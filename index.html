@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>שרשים חד־פעמיים במקרא</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f4f7; --surface:#ffffff; --ink:#1c2631; --muted:#5f6c7b; --line:#d9dee5;
+  --head:#1f3a56; --head-ink:#ffffff; --accent:#1f5f99; --hover:#eaf1f8; --stripe:#f8fafc;
+  --mark:#ffe58a; --mark-ink:#1c2631; --err:#a3322a;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141a21; --surface:#1b232c; --ink:#e6ebf1; --muted:#9aa7b5; --line:#2e3946;
+    --head:#243b53; --head-ink:#f2f6fa; --accent:#6aaee8; --hover:#233140; --stripe:#1f2831;
+    --mark:#7a6420; --mark-ink:#fff6d6; --err:#ff8a80; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141a21; --surface:#1b232c; --ink:#e6ebf1; --muted:#9aa7b5; --line:#2e3946;
+  --head:#243b53; --head-ink:#f2f6fa; --accent:#6aaee8; --hover:#233140; --stripe:#1f2831;
+  --mark:#7a6420; --mark-ink:#fff6d6; --err:#ff8a80; color-scheme: dark;
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Heebo","Arial Hebrew",Arial,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+header h1{font-family:"Frank Ruhl Libre","David","Times New Roman",serif;font-weight:700;font-size:2rem;margin:0 0 6px}
+header p{margin:0;color:var(--muted);max-width:68ch}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:24px 0 12px}
+.search{flex:1 1 320px;position:relative}
+.search input{width:100%;padding:12px 14px;font:inherit;font-size:1.05rem;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px}
+.search input:focus,.cfilter input:focus,select:focus,button:focus-visible,.letters button:focus-visible,th button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.opts{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:.92rem}
+.opts label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+select,.btn{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);cursor:pointer}
+.btn:hover{background:var(--hover)}
+.letters{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 12px}
+.letters button{min-width:34px;padding:5px 8px;font:inherit;font-family:"Frank Ruhl Libre",serif;font-size:1.05rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:4px;cursor:pointer}
+.letters button:hover{background:var(--hover)}
+.letters button[aria-pressed="true"]{background:var(--head);color:var(--head-ink);border-color:var(--head)}
+.status{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:.92rem;margin:0 0 8px}
+.tablebox{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:640px}
+thead th{background:var(--head);color:var(--head-ink);text-align:right;font-weight:500;padding:0;position:sticky;top:0;white-space:nowrap}
+th button{all:unset;box-sizing:border-box;display:flex;width:100%;align-items:center;gap:8px;padding:12px 14px;cursor:pointer}
+th button:hover{background:rgba(255,255,255,.1)}
+th .arrow{opacity:.45;font-size:.8em}
+th[aria-sort="ascending"] .arrow,th[aria-sort="descending"] .arrow{opacity:1}
+.cfilter th{background:var(--stripe);padding:6px 8px;position:static;border-bottom:1px solid var(--line)}
+.cfilter input{width:100%;min-width:90px;padding:6px 8px;font:inherit;font-size:.9rem;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:4px}
+tbody td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:nth-child(even){background:var(--stripe)}
+tbody tr:hover{background:var(--hover)}
+td.he{font-family:"Frank Ruhl Libre","David",serif;font-size:1.2rem}
+td.first{font-weight:700;color:var(--accent)}
+mark{background:var(--mark);color:var(--mark-ink);padding:0 1px;border-radius:2px}
+.empty{padding:36px 16px;text-align:center;color:var(--muted)}
+.pager{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:16px}
+.pager .btn[disabled]{opacity:.4;cursor:default}
+.pager .btn[aria-current="page"]{background:var(--head);color:var(--head-ink);border-color:var(--head)}
+.drop{margin-top:24px;padding:36px 20px;border:2px dashed var(--line);border-radius:8px;text-align:center;background:var(--surface)}
+.drop.over{border-color:var(--accent);background:var(--hover)}
+.drop p{margin:0 0 12px}
+.err{color:var(--err)}
+.sheets{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.sheets button{padding:6px 12px;font:inherit;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);cursor:pointer}
+.sheets button[aria-pressed="true"]{background:var(--head);color:var(--head-ink);border-color:var(--head)}
+[hidden]{display:none!important}
+@media (max-width:600px){header h1{font-size:1.6rem}.wrap{padding:18px 12px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>שרשים חד־פעמיים במקרא</h1>
+    <p>שרשים שנחשבים כ״חד־פעמיים״ (hapax legomena) בתנ״ך לפי לפחות מילונאי עברי אחד מימי הביניים. אפשר לחפש בכל העמודות, לסנן כל עמודה בנפרד, ולמיין.</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="search">
+      <input id="q" type="search" placeholder="חיפוש בכל העמודות (מספר מילים = כולן חייבות להופיע)" aria-label="חיפוש" autocomplete="off">
+    </div>
+    <select id="pageSize" aria-label="שורות בעמוד">
+      <option value="25">25 שורות</option>
+      <option value="50" selected>50 שורות</option>
+      <option value="100">100 שורות</option>
+      <option value="100000">הכול</option>
+    </select>
+    <button class="btn" id="csv" type="button">ייצוא CSV</button>
+    <button class="btn" id="theme" type="button" aria-label="החלפת ערכת צבעים">◐</button>
+  </div>
+  <div class="opts">
+    <label><input type="checkbox" id="optNiqqud" checked> התעלם מניקוד וטעמים</label>
+    <label><input type="checkbox" id="optFinals" checked> התעלם מאותיות סופיות</label>
+    <label><input type="checkbox" id="optStart"> רק תחילת תא</label>
+  </div>
+
+  <div id="app" hidden>
+    <div class="sheets" id="sheets" hidden></div>
+    <div class="letters" id="letters" aria-label="סינון לפי אות ראשונה"></div>
+    <div class="status"><span id="count"></span><span id="src"></span></div>
+    <div class="tablebox"><table id="tbl"></table></div>
+    <div class="pager" id="pager"></div>
+  </div>
+
+  <div class="drop" id="drop" hidden>
+    <p id="dropMsg">גררו לכאן את הקובץ <b>שרשים חד פעמים.xlsx</b> או בחרו אותו מהמחשב.</p>
+    <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+    <button class="btn" type="button" id="pick">בחירת קובץ</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  // ===== הגדרות =====
+  // הקובץ נטען מאותה תיקייה (עובד ב־GitHub Pages או בשרת מקומי). אם הוא לא נמצא, אפשר לבחור אותו ידנית.
+  var XLSX_URL = "שרשים חד פעמים.xlsx";
+
+  var $ = function(id){return document.getElementById(id)};
+  var state = {sheets:{}, names:[], sheet:null, headers:[], rows:[], norm:[], sort:{col:-1,dir:1}, page:1, letter:"", colFilters:[]};
+  var HEB = /[\u0590-\u05FF]/;
+
+  // ===== נרמול טקסט לחיפוש =====
+  var FIN = {"ך":"כ","ם":"מ","ן":"נ","ף":"פ","ץ":"צ"};
+  function normChar(ch){
+    var code = ch.charCodeAt(0);
+    var isMark = (code>=0x0591 && code<=0x05C7) || code===0x200E || code===0x200F;
+    if($("optNiqqud").checked && isMark) return "";
+    if($("optFinals").checked && FIN[ch]) return FIN[ch];
+    return ch.toLowerCase();
+  }
+  function norm(s){
+    var out="";
+    for(var i=0;i<s.length;i++) out+=normChar(s[i]);
+    return out;
+  }
+  function esc(s){return s.replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+  // הדגשת התאמות בטקסט המקורי
+  function highlight(text, terms){
+    if(!terms.length) return esc(text);
+    var n="", map=[];
+    for(var i=0;i<text.length;i++){
+      var c=normChar(text[i]);
+      if(c){ for(var k=0;k<c.length;k++){ n+=c[k]; map.push(i); } }
+    }
+    var marks=new Array(text.length).fill(false), any=false;
+    terms.forEach(function(t){
+      if(!t) return;
+      var from=0, p;
+      while((p=n.indexOf(t,from))!==-1){
+        var s=map[p], e=map[p+t.length-1];
+        // כולל סימני ניקוד שאחרי האות האחרונה
+        var end=e+1;
+        while(end<text.length && normChar(text[end])==="" ) end++;
+        for(var j=s;j<end;j++) marks[j]=true;
+        any=true; from=p+1;
+      }
+    });
+    if(!any) return esc(text);
+    var res="", open=false;
+    for(var m=0;m<text.length;m++){
+      if(marks[m] && !open){res+="<mark>";open=true}
+      if(!marks[m] && open){res+="</mark>";open=false}
+      res+=esc(text[m]);
+    }
+    if(open) res+="</mark>";
+    return res;
+  }
+
+  // ===== טעינת נתונים =====
+  function loadWorkbook(buf, label){
+    var wb = XLSX.read(buf,{type:"array"});
+    state.sheets={}; state.names=[];
+    wb.SheetNames.forEach(function(name){
+      var aoa = XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:"",raw:false,blankrows:false});
+      aoa = aoa.filter(function(r){return r.some(function(c){return String(c).trim()!==""})});
+      if(!aoa.length) return;
+      var width = Math.max.apply(null, aoa.map(function(r){return r.length}));
+      var headers = aoa[0].slice();
+      for(var i=0;i<width;i++){ if(headers[i]===undefined || String(headers[i]).trim()==="") headers[i]="עמודה "+(i+1); }
+      var rows = aoa.slice(1).map(function(r){
+        var o=[]; for(var i=0;i<width;i++) o.push(r[i]===undefined?"":String(r[i]).trim()); return o;
+      });
+      state.sheets[name]={headers:headers.map(String),rows:rows};
+      state.names.push(name);
+    });
+    if(!state.names.length) throw new Error("לא נמצאו נתונים בקובץ");
+    $("src").textContent = label||"";
+    $("drop").hidden=true; $("app").hidden=false;
+    buildSheetTabs();
+    selectSheet(state.names[0]);
+  }
+
+  function buildSheetTabs(){
+    var box=$("sheets");
+    box.innerHTML="";
+    box.hidden = state.names.length<2;
+    state.names.forEach(function(n){
+      var b=document.createElement("button");
+      b.type="button"; b.textContent=n; b.dataset.n=n;
+      b.addEventListener("click",function(){selectSheet(n)});
+      box.appendChild(b);
+    });
+  }
+
+  function selectSheet(name){
+    var s=state.sheets[name];
+    state.sheet=name; state.headers=s.headers; state.rows=s.rows;
+    state.sort={col:-1,dir:1}; state.page=1; state.letter="";
+    state.colFilters=s.headers.map(function(){return ""});
+    Array.prototype.forEach.call($("sheets").children,function(b){b.setAttribute("aria-pressed",b.dataset.n===name)});
+    reindex(); buildLetters(); buildHead(); render();
+  }
+
+  function reindex(){
+    state.norm = state.rows.map(function(r){return r.map(norm)});
+  }
+
+  // ===== אותיות =====
+  function firstLetter(s){
+    var n=norm(s).replace(/[^\u05D0-\u05EAa-z0-9]/gi,"");
+    return n?n[0]:"";
+  }
+  function buildLetters(){
+    var set={};
+    state.rows.forEach(function(r){var l=firstLetter(r[0]); if(l) set[l]=1});
+    var keys=Object.keys(set).sort(function(a,b){return a.localeCompare(b,"he")});
+    var box=$("letters"); box.innerHTML="";
+    box.hidden = keys.length<2 || keys.length>40;
+    var all=document.createElement("button");
+    all.type="button"; all.textContent="הכול"; all.dataset.l=""; all.setAttribute("aria-pressed","true");
+    box.appendChild(all);
+    keys.forEach(function(k){
+      var b=document.createElement("button"); b.type="button"; b.textContent=k; b.dataset.l=k; b.setAttribute("aria-pressed","false"); box.appendChild(b);
+    });
+  }
+  $("letters").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b) return;
+    state.letter=b.dataset.l; state.page=1;
+    Array.prototype.forEach.call($("letters").children,function(x){x.setAttribute("aria-pressed",x===b)});
+    render();
+  });
+
+  // ===== כותרות =====
+  function buildHead(){
+    var t=$("tbl");
+    var h="<thead><tr>";
+    state.headers.forEach(function(name,i){
+      h+='<th scope="col" data-i="'+i+'" aria-sort="none"><button type="button">'+esc(name)+'<span class="arrow">⇅</span></button></th>';
+    });
+    h+='</tr><tr class="cfilter">';
+    state.headers.forEach(function(name,i){
+      h+='<th><input type="search" data-f="'+i+'" placeholder="סינון" aria-label="סינון לפי '+esc(name)+'" autocomplete="off"></th>';
+    });
+    h+="</tr></thead><tbody></tbody>";
+    t.innerHTML=h;
+  }
+  $("tbl").addEventListener("click",function(e){
+    var th=e.target.closest("thead tr:first-child th"); if(!th) return;
+    var i=+th.dataset.i;
+    if(state.sort.col===i) state.sort.dir*=-1; else state.sort={col:i,dir:1};
+    render();
+  });
+  $("tbl").addEventListener("input",function(e){
+    var el=e.target; if(el.dataset.f===undefined) return;
+    state.colFilters[+el.dataset.f]=el.value; state.page=1; renderBody();
+  });
+
+  // ===== סינון ומיון =====
+  function terms(s){return norm(s).split(/\s+/).filter(Boolean)}
+  function matchTerm(cell,t){
+    return $("optStart").checked ? cell.indexOf(t)===0 : cell.indexOf(t)!==-1;
+  }
+  function filtered(){
+    var qt=terms($("q").value);
+    var cf=state.colFilters.map(terms);
+    var out=[];
+    for(var r=0;r<state.rows.length;r++){
+      var nrow=state.norm[r];
+      if(state.letter && firstLetter(state.rows[r][0])!==state.letter) continue;
+      var ok=true;
+      for(var c=0;c<cf.length && ok;c++){
+        for(var k=0;k<cf[c].length;k++){ if(!matchTerm(nrow[c],cf[c][k])){ok=false;break} }
+      }
+      if(ok && qt.length){
+        for(var k2=0;k2<qt.length && ok;k2++){
+          var hit=false;
+          for(var c2=0;c2<nrow.length;c2++){ if(matchTerm(nrow[c2],qt[k2])){hit=true;break} }
+          if(!hit) ok=false;
+        }
+      }
+      if(ok) out.push(r);
+    }
+    if(state.sort.col>=0){
+      var col=state.sort.col, d=state.sort.dir;
+      out.sort(function(a,b){
+        var x=state.norm[a][col], y=state.norm[b][col];
+        var nx=parseFloat(x), ny=parseFloat(y);
+        if(!isNaN(nx)&&!isNaN(ny)&&/^[\d.\s-]+$/.test(x)&&/^[\d.\s-]+$/.test(y)) return (nx-ny)*d;
+        return x.localeCompare(y,"he")*d;
+      });
+    }
+    return out;
+  }
+
+  // ===== תצוגה =====
+  function render(){
+    var ths=document.querySelectorAll("#tbl thead tr:first-child th");
+    ths.forEach(function(th,i){
+      var s = state.sort.col===i ? (state.sort.dir===1?"ascending":"descending") : "none";
+      th.setAttribute("aria-sort",s);
+      th.querySelector(".arrow").textContent = s==="ascending"?"▲":s==="descending"?"▼":"⇅";
+    });
+    renderBody();
+  }
+
+  function renderBody(){
+    var idx=filtered();
+    var size=+$("pageSize").value;
+    var pages=Math.max(1,Math.ceil(idx.length/size));
+    if(state.page>pages) state.page=pages;
+    var slice=idx.slice((state.page-1)*size, state.page*size);
+    var ht=terms($("q").value);
+    var cf=state.colFilters.map(terms);
+    var body=$("tbl").tBodies[0];
+    if(!slice.length){
+      body.innerHTML='<tr><td class="empty" colspan="'+state.headers.length+'">לא נמצאו תוצאות. נסו לקצר את החיפוש או לבטל סינון.</td></tr>';
+    } else {
+      var html="";
+      slice.forEach(function(r){
+        html+="<tr>";
+        state.rows[r].forEach(function(cell,c){
+          var cls=(HEB.test(cell)?"he":"")+(c===0?" first":"");
+          html+='<td class="'+cls.trim()+'">'+highlight(cell, ht.concat(cf[c]))+"</td>";
+        });
+        html+="</tr>";
+      });
+      body.innerHTML=html;
+    }
+    $("count").textContent = "מוצגות "+idx.length.toLocaleString("he")+" מתוך "+state.rows.length.toLocaleString("he")+" שורות";
+    renderPager(pages);
+    state.lastIdx=idx;
+  }
+
+  function renderPager(pages){
+    var p=$("pager"); p.innerHTML="";
+    if(pages<2) return;
+    function add(label,page,opts){
+      var b=document.createElement("button"); b.type="button"; b.className="btn"; b.textContent=label;
+      if(opts&&opts.disabled) b.disabled=true;
+      if(opts&&opts.current) b.setAttribute("aria-current","page");
+      b.addEventListener("click",function(){state.page=page;renderBody();window.scrollTo({top:$("app").offsetTop-10})});
+      p.appendChild(b);
+    }
+    add("הקודם",state.page-1,{disabled:state.page===1});
+    var start=Math.max(1,state.page-2), end=Math.min(pages,start+4); start=Math.max(1,end-4);
+    if(start>1){add("1",1); if(start>2){var d=document.createElement("span");d.textContent="…";p.appendChild(d)}}
+    for(var i=start;i<=end;i++) add(String(i),i,{current:i===state.page});
+    if(end<pages){ if(end<pages-1){var d2=document.createElement("span");d2.textContent="…";p.appendChild(d2)} add(String(pages),pages); }
+    add("הבא",state.page+1,{disabled:state.page===pages});
+  }
+
+  // ===== אירועים =====
+  var timer;
+  $("q").addEventListener("input",function(){clearTimeout(timer);timer=setTimeout(function(){state.page=1;renderBody()},120)});
+  $("pageSize").addEventListener("change",function(){state.page=1;renderBody()});
+  ["optNiqqud","optFinals"].forEach(function(id){$(id).addEventListener("change",function(){reindex();buildLetters();state.letter="";state.page=1;renderBody()})});
+  $("optStart").addEventListener("change",function(){state.page=1;renderBody()});
+
+  $("csv").addEventListener("click",function(){
+    var idx=state.lastIdx||[];
+    function q(s){return '"'+String(s).replace(/"/g,'""')+'"'}
+    var lines=[state.headers.map(q).join(",")].concat(idx.map(function(r){return state.rows[r].map(q).join(",")}));
+    var blob=new Blob(["\uFEFF"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="hapax-roots.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+
+  $("theme").addEventListener("click",function(){
+    var root=document.documentElement;
+    var dark = root.dataset.theme==="dark" || (!root.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+    root.dataset.theme = dark ? "light" : "dark";
+  });
+
+  // ===== בחירה/גרירה ידנית של קובץ =====
+  function readFile(f){
+    var fr=new FileReader();
+    fr.onload=function(){
+      try{ loadWorkbook(fr.result,f.name); }
+      catch(err){ $("dropMsg").innerHTML='<span class="err">לא ניתן לקרוא את הקובץ: '+esc(err.message)+'</span>'; $("drop").hidden=false; }
+    };
+    fr.readAsArrayBuffer(f);
+  }
+  $("pick").addEventListener("click",function(){$("file").click()});
+  $("file").addEventListener("change",function(){if(this.files[0]) readFile(this.files[0])});
+  var drop=$("drop");
+  ["dragenter","dragover"].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault();drop.classList.add("over")})});
+  ["dragleave","drop"].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove("over")})});
+  document.addEventListener("drop",function(e){var f=e.dataTransfer&&e.dataTransfer.files[0]; if(f) readFile(f)});
+
+  // ===== הפעלה =====
+  function showDrop(msg){ if(msg) $("dropMsg").innerHTML=msg; $("drop").hidden=false; }
+  if(location.protocol==="file:"){
+    showDrop();
+  } else {
+    fetch(encodeURI(XLSX_URL)).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.arrayBuffer();
+    }).then(function(buf){
+      loadWorkbook(buf, XLSX_URL);
+    }).catch(function(){
+      showDrop('הקובץ לא נמצא לצד הדף. גררו לכאן את <b>שרשים חד פעמים.xlsx</b> או בחרו אותו מהמחשב.');
+    });
+  }
+})();
+</script>
+</body>
+</html>
